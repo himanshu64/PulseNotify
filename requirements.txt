@@ -1,0 +1,52 @@
+# PulseNotify — pinned dependencies
+# Install with:  pip install -r requirements.txt
+# Regenerate with:  uv pip freeze | grep -v '^pulsenotify=='
+
+# Web framework
+Django==6.1.2
+asgiref==3.12.1
+sqlparse==0.6.0
+tzdata==2026.5
+
+# REST API
+djangorestframework==3.18.3
+
+# JWT authentication
+djangorestframework-simplejwt==5.5.1
+PyJWT==2.15.1
+
+# PostgreSQL driver
+psycopg2-binary==2.9.13
+
+# Celery + Redis broker
+celery==5.6.3
+amqp==5.4.1
+billiard==4.3.1
+kombu==5.6.2
+vine==5.1.0
+redis==6.4.0
+
+# HTTP client for the backend-to-backend price feed call
+requests==2.34.2
+certifi==2026.7.22
+charset-normalizer==3.5.2
+idna==3.20
+urllib3==2.8.0
+
+# .env loading
+python-dotenv==1.2.4
+
+# Celery CLI extras
+click==8.5.0
+click-didyoumean==0.3.1
+click-plugins==1.1.1.2
+click-repl==0.4.1
+prompt-toolkit==3.0.53
+wcwidth==0.9.2
+
+# Celery support libraries
+packaging==26.3
+python-dateutil==2.9.0.post0
+six==1.17.0
+typing-extensions==4.16.0
+tzlocal==5.4.4

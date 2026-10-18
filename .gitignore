@@ -1,0 +1,36 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets — never commit
+.env
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Static files
+/staticfiles/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Celery
+celerybeat-schedule*
+celerybeat.pid
+
+# Redis / local tool dumps
+dump.rdb
+ruvector.db
+
+# Logs
+*.log
