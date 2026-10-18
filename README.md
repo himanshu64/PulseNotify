@@ -266,7 +266,7 @@ pulsenotify/
 │   ├── views.py             the 7 endpoints (alerts list/create is a ListCreateAPIView)
 │   ├── permissions.py       custom IsAdminUser
 │   ├── admin.py
-│   └── tests.py             32 tests
+│   └── tests.py             34 tests
 ├── postman/                 PulseNotify.postman_collection.json
 ├── docker-compose.yml       PostgreSQL + Redis
 ├── requirements.txt         pinned
@@ -290,7 +290,7 @@ The three required unit tests live in `pulse/tests.py`:
 3. `AlertScopingTest` — users see only their own alerts
 
 Alongside them: profile auto-creation, the admin permission, all 7 endpoints, and both
-Celery tasks — 32 tests in total.
+Celery tasks — 34 tests in total.
 
 `scripts/verify_e2e.py` drives the same 13 scenarios over real HTTP against a running server.
 
