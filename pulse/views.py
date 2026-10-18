@@ -19,7 +19,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import generics, serializers, status
 from rest_framework.decorators import (
     api_view,
     authentication_classes,
@@ -140,79 +140,43 @@ def login(request):
 # 5.3 / 5.4  Alerts
 # ---------------------------------------------------------------------------
 
-@api_view(["GET", "POST"])
-def alert_collection(request):
+class PriceAlertSerializer(serializers.ModelSerializer):
+    """``user`` and ``status`` are never read from the body."""
+
+    class Meta:
+        model = PriceAlert
+        fields = ("id", "origin", "destination", "threshold_price", "status", "created_at")
+        read_only_fields = ("id", "status", "created_at")
+
+    def validate_origin(self, value):
+        return value.strip().upper()
+
+    def validate_destination(self, value):
+        return value.strip().upper()
+
+    def validate_threshold_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("threshold_price must be greater than zero")
+        return value
+
+
+class AlertListCreateView(generics.ListCreateAPIView):
     """
-    GET  — list the logged-in user's own alerts. The queryset is scoped to
+    GET  — list the logged-in user's own alerts. get_queryset() is scoped to
            request.user, so a user can never see another user's alerts. An
            empty list (not a 404) is returned when they have none.
 
     POST — create an alert for the logged-in user. The user comes from
            request.user (the JWT), never from the request body.
     """
-    if request.method == "GET":
-        alerts = PriceAlert.objects.filter(user=request.user)
 
-        data = [
-            {
-                "id": alert.id,
-                "origin": alert.origin,
-                "destination": alert.destination,
-                "threshold_price": str(alert.threshold_price),
-                "status": alert.status,
-                "created_at": alert.created_at,
-            }
-            for alert in alerts
-        ]
-        return Response(data, status=status.HTTP_200_OK)
+    serializer_class = PriceAlertSerializer
 
-    origin = (request.data.get("origin") or "").strip().upper()
-    destination = (request.data.get("destination") or "").strip().upper()
-    threshold_price = request.data.get("threshold_price")
+    def get_queryset(self):
+        return PriceAlert.objects.filter(user=self.request.user)
 
-    if not origin or not destination:
-        return Response(
-            {"error": "origin and destination are required"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    if threshold_price in (None, ""):
-        return Response(
-            {"error": "threshold_price is required"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    try:
-        threshold_price = float(threshold_price)
-    except (TypeError, ValueError):
-        return Response(
-            {"error": "threshold_price must be a number"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    if threshold_price <= 0:
-        return Response(
-            {"error": "threshold_price must be greater than zero"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    alert = PriceAlert.objects.create(
-        user=request.user,
-        origin=origin,
-        destination=destination,
-        threshold_price=threshold_price,
-    )
-
-    return Response(
-        {
-            "id": alert.id,
-            "origin": alert.origin,
-            "destination": alert.destination,
-            "threshold_price": str(alert.threshold_price),
-            "status": alert.status,
-        },
-        status=status.HTTP_201_CREATED,
-    )
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 @api_view(["DELETE"])

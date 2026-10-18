@@ -227,6 +227,5 @@ LOGGING = {
     "root": {"handlers": ["console"], "level": "INFO"},
     "loggers": {
         "pulse": {"handlers": ["console"], "level": "INFO", "propagate": False},
-        "celery": {"handlers": ["console"], "level": "INFO", "propagate": False},
     },
 }

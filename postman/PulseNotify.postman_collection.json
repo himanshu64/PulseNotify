@@ -152,8 +152,9 @@
             "exec": [
               "pm.test('200 OK', () => pm.response.to.have.status(200));",
               "pm.test('body is a list', () => { pm.expect(pm.response.json()).to.be.an('array'); });",
-              "pm.test('all alerts belong to alice', () => {",
-              "  pm.response.json().forEach(a => { pm.expect(a.origin).to.not.eql(null); });",
+              "pm.test('only alice\\'s own alert is listed', () => {",
+              "  const ids = pm.response.json().map(a => String(a.id));",
+              "  pm.expect(ids).to.eql([String(pm.collectionVariables.get('alert_id'))]);",
               "});"
             ]
           }
@@ -255,18 +256,8 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('201 Created (or 400 if bob already exists — re-run is safe)', () => {",
-              "  pm.expect([201, 400]).to.include(pm.response.code);",
-              "});",
-              "// Whatever register returned, log bob in so we hold a valid token.",
-              "const login = pm.sendRequest({",
-              "  url: pm.collectionVariables.get('base_url') + '/api/auth/login/',",
-              "  method: 'POST',",
-              "  header: { 'Content-Type': 'application/json' },",
-              "  body: { mode: 'raw', raw: JSON.stringify({ username: 'bob', password: 'bobspass123' }) }",
-              "}, (err, res) => {",
-              "  if (!err && res.code === 200) { pm.collectionVariables.set('other_token', res.json().access); }",
-              "});"
+              "pm.test('201 Created', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('other_token', pm.response.json().access);"
             ]
           }
         }

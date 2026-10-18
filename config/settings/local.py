@@ -71,7 +71,12 @@ CELERY_TASK_ALWAYS_EAGER = env_bool("CELERY_TASK_ALWAYS_EAGER", False)
 CELERY_TASK_EAGER_PROPAGATES = True
 
 # Browsable API is convenient in dev.
-DEFAULT_RENDERER_CLASSES_OVERRIDE = ("rest_framework.renderers.JSONRenderer",
-                                     "rest_framework.renderers.BrowsableAPIRenderer")
+REST_FRAMEWORK = {
+    **REST_FRAMEWORK,  # noqa: F405
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ),
+}
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

@@ -248,6 +248,29 @@ class AlertApiTest(TestCase):
         self.assertEqual(len(payload), 1)
         self.assertEqual(payload[0]["origin"], "DEL")
 
+    def test_alert_create_takes_user_from_token_not_body(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(
+            "/api/alerts/",
+            {"origin": "blr", "destination": "hyd", "threshold_price": 2500,
+             "user": self.other.id, "status": "triggered"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+        alert = PriceAlert.objects.get(id=response.json()["id"])
+        self.assertEqual(alert.user, self.user)
+        self.assertEqual(alert.status, PriceAlert.Status.ACTIVE)
+        self.assertEqual((alert.origin, alert.destination), ("BLR", "HYD"))
+
+    def test_alert_create_rejects_non_positive_threshold(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(
+            "/api/alerts/",
+            {"origin": "DEL", "destination": "BOM", "threshold_price": 0},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
     def test_alert_delete_other_users_alert_returns_404(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.delete(f"/api/alerts/{self.other_alert.id}/")

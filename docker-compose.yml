@@ -2,16 +2,17 @@ services:
   db:
     image: postgres:16-alpine
     container_name: pulsenotify-db
+    # Credentials come from .env (docker compose reads it automatically).
     environment:
-      POSTGRES_DB: pulsenotify
-      POSTGRES_USER: pulsenotify
-      POSTGRES_PASSWORD: pulsenotify
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pulsenotify -d pulsenotify"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10

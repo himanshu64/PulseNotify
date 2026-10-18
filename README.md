@@ -50,18 +50,23 @@ Two Celery tasks:
 # 1. Install dependencies
 uv sync                      # or: pip install -r requirements.txt
 
-# 2. Start PostgreSQL + Redis
-docker compose up -d db redis
+# 2. Configure the environment (docker compose reads the DB credentials from it)
+cp .env.example .env
 
-# 3. Configure the environment
-cp .env.example .env         # then edit DJANGO_SETTINGS_MODULE if you deploy
+# 3. Start PostgreSQL + Redis
+docker compose up -d db redis
 
 # 4. Migrate
 python manage.py migrate
 ```
 
 `.env` holds every secret — `SECRET_KEY`, DB credentials, broker URL. It's in `.gitignore` and
-must never be committed. `.env.example` is the committed template.
+must never be committed. `.env.example` is the committed template. `manage.py`, the Celery
+worker and Beat all load it, and `docker-compose.yml` takes `DB_NAME` / `DB_USER` /
+`DB_PASSWORD` from it.
+
+If PostgreSQL isn't reachable, `config.settings.local` falls back to a local SQLite file so
+the tests still run; start Docker first if you want to see the tables in pgAdmin.
 
 ```bash
 DJANGO_SETTINGS_MODULE=config.settings.local      # → config.settings.production when deploying
@@ -258,7 +263,7 @@ pulsenotify/
 │   ├── signals.py           post_save → auto-create UserProfile
 │   ├── apps.py              ready() connects the signals
 │   ├── tasks.py             check_prices, send_notification
-│   ├── views.py             the 7 endpoints
+│   ├── views.py             the 7 endpoints (alerts list/create is a ListCreateAPIView)
 │   ├── permissions.py       custom IsAdminUser
 │   ├── admin.py
 │   └── tests.py             32 tests
