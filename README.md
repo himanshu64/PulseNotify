@@ -300,8 +300,9 @@ Import `postman/PulseNotify.postman_collection.json`. Set `base_url` (defaults t
 `http://localhost:8000`), then run the collection in order — the scripts save the access token
 and the created alert id into collection variables for you.
 
-The 15 requests cover all 13 required scenarios plus the admin-success and second-user setup
-cases. Request 15 needs an admin JWT pasted into `admin_token`.
+The 16 requests cover all 13 required scenarios plus the second-user setup, the admin-success
+case, and the empty-list case (a user with no alerts gets `[]`, not `404`). Request 15 needs
+an admin JWT pasted into `admin_token`.
 
 ## Design notes
 

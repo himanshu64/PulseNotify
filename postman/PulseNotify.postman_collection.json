@@ -322,6 +322,26 @@
           }
         }
       ]
+    },
+    {
+      "name": "16 — List alerts for a user with none → 200 []",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{other_token}}" }],
+        "url": { "raw": "{{base_url}}/api/alerts/", "host": ["{{base_url}}"], "path": ["api", "alerts", ""] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('200 OK, not 404', () => pm.response.to.have.status(200));",
+              "pm.test('empty list', () => { pm.expect(pm.response.json()).to.eql([]); });"
+            ]
+          }
+        }
+      ]
     }
   ]
 }
